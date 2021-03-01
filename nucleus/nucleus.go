@@ -27,6 +27,8 @@ type Client struct {
 	UserAgent string
 
 	common service
+
+	Projects *ProjectsService
 }
 
 type service struct {
@@ -44,6 +46,8 @@ func NewClient(organisation string, httpClient *http.Client) *Client {
 
 	c := &Client{client: httpClient, BaseURL: baseURL, UserAgent: userAgent}
 	c.common.client = c
+
+	c.Projects = (*ProjectsService)(&c.common)
 
 	return c
 }
