@@ -29,6 +29,7 @@ type Client struct {
 	common service
 
 	Projects *ProjectsService
+	Logs     *LogsService
 }
 
 type service struct {
@@ -48,6 +49,7 @@ func NewClient(organisation string, httpClient *http.Client) *Client {
 	c.common.client = c
 
 	c.Projects = (*ProjectsService)(&c.common)
+	c.Logs = (*LogsService)(&c.common)
 
 	return c
 }
