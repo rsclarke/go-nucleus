@@ -14,7 +14,7 @@ type Project struct {
 	TrackingMethod string   `json:"tracking_method"`
 	Name           string   `json:"project_name"`
 	Description    string   `json:"project_description"`
-	ID             int64    `json:"project_id"`
+	ID             string   `json:"project_id"` // API returns string not int64
 	Groups         []string `json:"project_groups"`
 	Org            string   `json:"project_org"`
 }
