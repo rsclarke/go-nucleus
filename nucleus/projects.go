@@ -36,8 +36,8 @@ func (s *ProjectsService) ListProjects(ctx context.Context) ([]*Project, *http.R
 }
 
 // GetProject returns details on a specific project
-func (s *ProjectsService) GetProject(ctx context.Context, id int64) (*Project, *http.Response, error) {
-	u := fmt.Sprintf("projects/%v", id)
+func (s *ProjectsService) GetProject(ctx context.Context, projectID string) (*Project, *http.Response, error) {
+	u := fmt.Sprintf("projects/%v", projectID)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
