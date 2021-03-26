@@ -29,34 +29,34 @@ const (
 
 // Asset contains the property which describes an asset.
 type Asset struct {
-	OperatingSystemVersion string                 `json:"operating_system_version"`
-	OperatingSystemName    string                 `json:"operating_system_name"`
-	InactiveDate           string                 `json:"asset_inactive_date"`
-	DataSensitivityScore   DataSensitivity        `json:"asset_data_sensitivity_score"`
-	ImageID                string                 `json:"image_id"`
-	Users                  []string               `json:"asset_users"`
-	Location               string                 `json:"asset_location"`
-	Criticality            string                 `json:"asset_criticality"`
-	CriticalityScore       string                 `json:"asset_criticality_score"`
-	Active                 bool                   `json:"active"`
-	ImageDistro            string                 `json:"image_distro"`
-	IPAddress              string                 `json:"ip_address"`
-	Notes                  string                 `json:"asset_notes"`
+	OperatingSystemVersion string                 `json:"operating_system_version,omitempty"`
+	OperatingSystemName    string                 `json:"operating_system_name,omitempty"`
+	InactiveDate           string                 `json:"asset_inactive_date,omitempty"`
+	DataSensitivityScore   DataSensitivity        `json:"asset_data_sensitivity_score,omitempty"`
+	ImageID                string                 `json:"image_id,omitempty"`
+	Users                  []string               `json:"asset_users,omitempty"`
+	Location               string                 `json:"asset_location,omitempty"`
+	Criticality            string                 `json:"asset_criticality,omitempty"`
+	CriticalityScore       string                 `json:"asset_criticality_score,omitempty"`
+	Active                 bool                   `json:"active,omitempty"`
+	ImageDistro            string                 `json:"image_distro,omitempty"`
+	IPAddress              string                 `json:"ip_address,omitempty"`
+	Notes                  string                 `json:"asset_notes,omitempty"`
 	ID                     string                 `json:"asset_id,omitempty"`
 	Name                   string                 `json:"asset_name"`
-	MatchName              string                 `json:"asset_match_name"`      // not in swagger
-	MatchNameLink          string                 `json:"asset_match_name_link"` // not in swagger
-	Groups                 util.EmptyStrAsSlice   `json:"asset_groups"`          // GetAsset returns the empty string "" for groups instead of the empty array
-	ImageRepo              string                 `json:"image_repo"`
-	Info                   map[string]interface{} `json:"asset_info"`
-	URL                    string                 `json:"url"`
-	DomainName             string                 `json:"domain_name"`
-	ComplianceScore        Compliance             `json:"asset_complianced_score"`
-	Type                   string                 `json:"asset_type"`
-	MACAddress             string                 `json:"mac_address"`
-	Decommissioned         string                 `json:"decommed"`
-	ParentHostID           string                 `json:"parent_host_id"`
-	ImageTag               string                 `json:"image_tag"`
+	MatchName              string                 `json:"asset_match_name,omitempty"`      // not in swagger
+	MatchNameLink          string                 `json:"asset_match_name_link,omitempty"` // not in swagger
+	Groups                 util.EmptyStrAsSlice   `json:"asset_groups,omitempty"`          // GetAsset returns the empty string "" for groups instead of the empty array
+	ImageRepo              string                 `json:"image_repo,omitempty"`
+	Info                   map[string]interface{} `json:"asset_info,omitempty"`
+	URL                    string                 `json:"url,omitempty"`
+	DomainName             string                 `json:"domain_name,omitempty"`
+	ComplianceScore        Compliance             `json:"asset_complianced_score,omitempty"`
+	Type                   string                 `json:"asset_type,omitempty"`
+	MACAddress             string                 `json:"mac_address,omitempty"`
+	Decommissioned         string                 `json:"decommed,omitempty"`
+	ParentHostID           string                 `json:"parent_host_id,omitempty"`
+	ImageTag               string                 `json:"image_tag,omitempty"`
 }
 
 // AssetVuln includes asset and vulnerability information (not as detailed as Asset)
@@ -236,6 +236,30 @@ func (s *ProjectsService) UpdateAsset(ctx context.Context, projectID string, ass
 	}
 
 	r := new(UpdateAssetResponse)
+	resp, err := s.client.Do(ctx, req, &r)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return r, resp, nil
+}
+
+type CreateAssetResponse struct {
+	AssetID string `json:"asset_id"`
+	Success bool   `json:"success"`
+}
+
+func (s *ProjectsService) CreateAsset(ctx context.Context, projectID string, asset *Asset) (*CreateAssetResponse, *http.Response, error) {
+	trimAsset := *asset
+	trimAsset.ID = ""
+
+	u := fmt.Sprintf("projects/%v/assets", projectID)
+	req, err := s.client.NewRequest("POST", u, trimAsset)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	r := new(CreateAssetResponse)
 	resp, err := s.client.Do(ctx, req, &r)
 	if err != nil {
 		return nil, resp, err
