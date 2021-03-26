@@ -34,7 +34,7 @@ type AssessmentVuln struct {
 // AssessmentActivity actions conducted by users
 type AssessmentActivity struct {
 	Action string `json:"action"`
-	Date   string `json:"date"`
+	Date   int64  `json:"date"`
 	User   string `json:"user"`
 }
 
@@ -45,7 +45,7 @@ type AssessmentData struct {
 	ReportLimitations  string               `json:"assessment_report_limitations"`
 	ReportOverview     string               `json:"assessment_report_overview"`
 	ProviderName       string               `json:"assessment_provider_name"`
-	Vulns              []AssessmentVuln     `json:"vulns"`
+	Vulns              AssessmentVuln       `json:"vulns"`
 	Type               string               `json:"assessment_type"`
 	Provider           string               `json:"assessment_provider"`
 	AssessmentActivity []AssessmentActivity `json:"assessment_activity"`
@@ -58,10 +58,10 @@ type AssessmentData struct {
 
 // Assessment a conducted assessment of the project
 type Assessment struct {
-	ProjectID       string           `json:"project_id"`
-	Data            []AssessmentData `json:"assessment_data"`
-	ParentProjectID string           `json:"parent_project_id"`
-	Name            string           `json:"assessment_name"`
+	ProjectID       string         `json:"project_id"`
+	Data            AssessmentData `json:"assessment_data"`
+	ParentProjectID string         `json:"parent_project_id"`
+	Name            string         `json:"assessment_name"`
 }
 
 // ListAssessments returns all assessments for a given project id
