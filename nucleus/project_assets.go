@@ -42,7 +42,7 @@ type Asset struct {
 	ImageDistro            string                 `json:"image_distro"`
 	IPAddress              string                 `json:"ip_address"`
 	Notes                  string                 `json:"asset_notes"`
-	ID                     string                 `json:"asset_id"`
+	ID                     string                 `json:"asset_id,omitempty"`
 	Name                   string                 `json:"asset_name"`
 	MatchName              string                 `json:"asset_match_name"`      // not in swagger
 	MatchNameLink          string                 `json:"asset_match_name_link"` // not in swagger
@@ -216,4 +216,30 @@ func (s *ProjectsService) ListAssetGroups(ctx context.Context, projectID string)
 	}
 
 	return g, resp, nil
+}
+
+type UpdateAssetResponse struct {
+	AssetID       string   `json:"asset_id"`
+	UnknownFields []string `json:"unknown_fields"`
+	Success       bool     `json:"success"`
+}
+
+func (s *ProjectsService) UpdateAsset(ctx context.Context, projectID string, asset *Asset) (*UpdateAssetResponse, *http.Response, error) {
+	assetID := asset.ID
+	trimAsset := *asset
+	trimAsset.ID = ""
+
+	u := fmt.Sprintf("projects/%v/assets/%v", projectID, assetID)
+	req, err := s.client.NewRequest("PUT", u, trimAsset)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	r := new(UpdateAssetResponse)
+	resp, err := s.client.Do(ctx, req, &r)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return r, resp, nil
 }
