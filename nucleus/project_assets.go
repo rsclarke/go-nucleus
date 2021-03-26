@@ -117,6 +117,10 @@ type FindingSummaryRecord struct {
 	} `json:"compliance_frameworks"`
 }
 
+type AssetGroup struct {
+	Name string `json:"asset_group"`
+}
+
 // GetAsset returns details on a specific project
 func (s *ProjectsService) GetAsset(ctx context.Context, projectID string, assetID string) (*Asset, *http.Response, error) {
 	u := fmt.Sprintf("projects/%v/assets/%v", projectID, assetID)
@@ -196,4 +200,20 @@ func (s *ProjectsService) ListAssetFindings(ctx context.Context, projectID strin
 	}
 
 	return r, resp, nil
+}
+
+func (s *ProjectsService) ListAssetGroups(ctx context.Context, projectID string) ([]*AssetGroup, *http.Response, error) {
+	u := fmt.Sprintf("projects/%v/assets/groups", projectID)
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var g []*AssetGroup
+	resp, err := s.client.Do(ctx, req, &g)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return g, resp, nil
 }
