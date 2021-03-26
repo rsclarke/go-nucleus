@@ -11,6 +11,7 @@ import (
 
 type DataSensitivity string
 type Compliance string
+type ExploitableFinding string
 
 const (
 	Low      DataSensitivity = "2"
@@ -20,6 +21,10 @@ const (
 
 	No  Compliance = "5"
 	Yes Compliance = "10"
+
+	NotExploitable         ExploitableFinding = "0"
+	Exploitable            ExploitableFinding = "1"
+	ManuallySetExploitable ExploitableFinding = "2"
 )
 
 // Asset contains the property which describes an asset.
@@ -88,6 +93,30 @@ type AssetVuln struct {
 	Active                    bool               `json:"active"`
 }
 
+type FindingSummaryRecord struct {
+	AssetFixedCount      int64                `json:"asset_fixed_count"`
+	AssetMitigatedCount  int64                `json:"asset_mitigated_count"`
+	AssetCount           string               `json:"asset_count"`
+	Name                 string               `json:"finding_name"`
+	Number               string               `json:"finding_number"`
+	Discovered           string               `json:"finding_discovered"`
+	Exploitable          ExploitableFinding   `json:"finding_exploitable"`
+	Result               string               `json:"finding_result"`
+	Severity             string               `json:"finding_severity"`
+	Status               string               `json:"finding_status"`
+	CVE                  string               `json:"finding_cve"`
+	Count                string               `json:"finding_count"`
+	IAVA                 string               `json:"finding_iava"`
+	ScanDate             string               `json:"scan_date"`
+	ScanType             string               `json:"scan_type"`
+	IssueOpenCount       int64                `json:"issue_open_count"`
+	IssueClosedCount     int64                `json:"issue_closed_count"`
+	Issues               util.EmptyStrAsSlice `json:"issues"`
+	ComplianceFrameworks []struct {
+		Name string `json:"framework_name"`
+	} `json:"compliance_frameworks"`
+}
+
 // GetAsset returns details on a specific project
 func (s *ProjectsService) GetAsset(ctx context.Context, projectID string, assetID string) (*Asset, *http.Response, error) {
 	u := fmt.Sprintf("projects/%v/assets/%v", projectID, assetID)
@@ -151,4 +180,20 @@ func (s *ProjectsService) ListAssets(ctx context.Context, projectID string, requ
 	}
 
 	return a, resp, nil
+}
+
+func (s *ProjectsService) ListAssetFindings(ctx context.Context, projectID string, assetID string) ([]*FindingSummaryRecord, *http.Response, error) {
+	u := fmt.Sprintf("projects/%v/assets/%v/findings", projectID, assetID)
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var r []*FindingSummaryRecord
+	resp, err := s.client.Do(ctx, req, &r)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return r, resp, nil
 }
