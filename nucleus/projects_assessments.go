@@ -58,14 +58,14 @@ type AssessmentData struct {
 
 // Assessment a conducted assessment of the project
 type Assessment struct {
-	ProjectID       int              `json:"project_id"`
+	ProjectID       string           `json:"project_id"`
 	Data            []AssessmentData `json:"assessment_data"`
-	ParentProjectID int              `json:"parent_project_id"`
+	ParentProjectID string           `json:"parent_project_id"`
 	Name            string           `json:"assessment_name"`
 }
 
 // ListAssessments returns all assessments for a given project id
-func (s *ProjectsService) ListAssessments(ctx context.Context, projectID int64) ([]*Assessment, *http.Response, error) {
+func (s *ProjectsService) ListAssessments(ctx context.Context, projectID string) ([]*Assessment, *http.Response, error) {
 	u := fmt.Sprintf("projects/%v/assessments", projectID)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
